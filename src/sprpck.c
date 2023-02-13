@@ -113,6 +113,8 @@ int CountColors( BYTE *raw, int iw, int w, int h, BYTE *pColIndexes )
   int   nColor[16];
   int   nCount, x, y;
   long  lSum;
+
+
   for ( x = 0; x < 16; ++x ) {     /* init. vectors */
     nColor[x] = 0;
     CollRedirect[x] = 0;
@@ -133,7 +135,7 @@ int CountColors( BYTE *raw, int iw, int w, int h, BYTE *pColIndexes )
       ++nCount;
     }
     lSum += nColor[x];
-    //if (verbose) printf("Color# %d is used %d times.\n", x, nColor[x]);
+    if (verbose) printf("Color# %d is used %d times.\n", x, nColor[x]);
   }
   if ( verbose ) {
     for ( x = 0; x < 16; ++x ) {

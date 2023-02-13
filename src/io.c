@@ -34,6 +34,8 @@ long ConvertBMP( BYTE * in, long in_size, int *in_w, int *in_h, int line )
   int nActColor;          // actual color (24 bit)
   BYTE bOrgColIndex[256];  // used for adjusting a 256 color palette
   short nOrgColIndex[16];  // used for adjusting a 24bit palette
+  
+
   inbmpfile = ( PBITMAPFILEHEADER ) malloc( sizeof( BITMAPFILEHEADER ) );
   inbmpfile->bfType    = *( WORD * ) ( in );
   inbmpfile->bfSize    = *( DWORD * )( in + 2 );
@@ -50,6 +52,10 @@ long ConvertBMP( BYTE * in, long in_size, int *in_w, int *in_h, int line )
   inbmpinfo->bmiHeader.biYPelsPerMeter= *( LONG * )  ( in + 42 );
   inbmpinfo->bmiHeader.biClrUsed        = *( DWORD * ) ( in + 46 );
   inbmpinfo->bmiHeader.biClrImportant = *( DWORD * ) ( in + 50 );
+
+    printf ("Type = %d\n", inbmpfile->bfType == 0x4d42);
+    printf ("Size = %d %d\n", inbmpfile->bfSize, in_size);
+
   if ( inbmpfile->bfType == 0x4d42      // 0x4d42 --> 'BM' in Intel
        && inbmpfile->bfSize == ( DWORD ) in_size ) {
     if ( verbose ) {
@@ -96,6 +102,9 @@ long ConvertBMP( BYTE * in, long in_size, int *in_w, int *in_h, int line )
     // files generated via devIL library
     // we start from the end of the file to read lines from top to bottom
     pByte2 = in + inbmpfile->bfSize;
+
+    printf("BMP bpl = %d\n", bpl);
+
     if ( bpl == 24 ) {
       nActColIndex = 0;
       for ( x = 0; x < 16; x++ ) {      // up to 16 colors from a 24bit-BMP
@@ -121,9 +130,9 @@ long ConvertBMP( BYTE * in, long in_size, int *in_w, int *in_h, int line )
           nActColor = g*16*16 + b*16 + r;  //
           if ( nColor[nActColor] == -1 ) { // A new Color encountered
             nActColIndex++;
-            nColor[nActColor] = nActColIndex;
+            nColor[nActColor] = nActColor;
             if ( nActColIndex < 16 ) {
-              nOrgColIndex[nActColIndex] = nActColor;// Palette adjusting
+              nOrgColIndex[nActColor] = nActColor;// Palette adjusting
             }
           }
           *help++ = ( BYTE )nColor[nActColor];
@@ -160,11 +169,12 @@ long ConvertBMP( BYTE * in, long in_size, int *in_w, int *in_h, int line )
           bActColor = *pByte++;
           if ( nColor[bActColor] == -1 ) { // A new Color encountered
             nActColIndex++;
-            nColor[bActColor] = nActColIndex;
-            bOrgColIndex[nActColIndex] = bActColor;// Palette adjusting
+            nColor[bActColor] = bActColor;
+            bOrgColIndex[bActColor] = bActColor;// Palette adjusting
           }
         }  // x
       } // y
+      
       if ( verbose ) {
         printf( "Colours used: %d \n", nActColIndex+1 );
       }
