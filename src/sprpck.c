@@ -63,6 +63,7 @@
 
 #define VER "2.4"
 #include "sprpck.h"
+#include <limits.h>
 
 int verbose;
 BYTE rgb[32];
@@ -728,9 +729,10 @@ extern int org_w, org_h;
 
 int main( int argc, char *argv[] )
 {
+  int j = 0;
   /* batch */
   FILE *batch_handle = NULL;
-  char my_argv[CMD_OPT][32], cmdline[128];
+  char my_argv[CMD_OPT][PATH_MAX], cmdline[PATH_MAX];
   /* input */
   char *infile = "";
   BYTE *in, *raw;
@@ -738,10 +740,10 @@ int main( int argc, char *argv[] )
   int  in_w, in_h;
   int  t_x, t_y;
   /* output */
-  char outfile[128];
-  char outfile2[128];
-  char palfile[128];
-  char palname[128];
+  char outfile[PATH_MAX];
+  char outfile2[PATH_MAX];
+  char palfile[PATH_MAX];
+  char palname[PATH_MAX];
   char * extension;
   BYTE *out;
   int w, h, action_x, action_y, off_x, off_y, size, packed, type, sort_colindex, tiles, setsize;
@@ -863,6 +865,8 @@ int main( int argc, char *argv[] )
         break;
       }
     } else {
+      memset(&my_argv, 0, sizeof(my_argv));
+
       for ( i = 1; i < CMD_OPT ; ++i )
         if ( argv[i] == NULL ) {
           break;
@@ -870,6 +874,7 @@ int main( int argc, char *argv[] )
           strcpy( my_argv[i], argv[i] );
         }
     }
+
     i = 1;
     c_ptr = my_argv[1];
     while ( *c_ptr == '-' && argc ) {
@@ -1015,6 +1020,7 @@ int main( int argc, char *argv[] )
            && ( ( in_w == 0 ) || ( in_h == 0 ) ) ) {
         error( line, "Input-size not set !\n" );
       }
+
       if ( ( in_size = LoadFile( infile, &in ) ) != 0 ) {
         if ( original ) {
           free( original );
