@@ -34,3 +34,4 @@ vs/Release/sprpck.Build.CppClean.log
 .DS_Store
 *.o
 Src/sprpck
+src/sprpck
